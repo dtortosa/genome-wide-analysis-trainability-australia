@@ -1,46 +1,46 @@
 # High-Scale Distributed Genomic Pipeline & Parallelized Polygenic Scoring (PGS) Framework
 
-An end-to-end distributed data engineering and statistical modeling pipeline designed to ingest raw, high-density genomic arrays, execute multi-stage quality control (QC) filtering, scale features via imputation, and perform high-scale parallelized linear scoring. 
+An end-to-end pipeline for genomic data engineering and statistical modeling. It ingests raw high-density genomic arrays, runs multi-stage quality control (QC), scales features through imputation, and computes polygenic scores in parallel.
 
-The system leverages high-performance computing (HPC) environments, distributed data processing, and robust cross-validation frameworks to evaluate predictive stability across a matrix of **3.85 billion genotype calls** ($1,204 \text{ samples} \times 3.2\text{M  variants}$).
+The pipeline runs on high-performance computing (HPC) environments and uses distributed processing and cross-validation to assess predictive stability across a matrix of **3.85 billion genotype calls** ($1,204 \text{ samples} \times 3.2\text{M variants}$).
 
 ---
 
 ## 🏗️ Pipeline Architecture
 
-The platform processes high-dimensional genomic and longitudinal phenotypic datasets through four core decoupled engineering phases:
+The pipeline processes high-dimensional genomic and longitudinal phenotypic datasets in four decoupled phases:
 
-- Raw Array Ingestion (Infinium CoreExome)
-- Distributed Genomic Processing & Data-Quality Gating (QC)
-- Imputation Scaling & Dimensionality Reduction (PCA)
-- Parallelized Polygenic Scoring (PGS) Engine & 100-Fold Validation
+- Raw array ingestion (Infinium CoreExome)
+- Genomic processing and quality control (QC)
+- Imputation and dimensionality reduction (PCA)
+- Parallelized polygenic scoring (PGS) and 100-fold validation
 
-### 1. High-Dimensional Matrix Ingestion & Genomic ETL
-- **Ingestion Scale:** Processes raw data arrays from 1,422 initial cohorts across ~540,000 highly polymorphic markers (~800 million initial data points).
-- Engineered automated data-wrangle scripts utilizing optimized string processing (`AWK`/`Bash`) to re-format and structure genomic streams for fast downstream matrix parsing.
+### 1. Genomic Data Ingestion & ETL
+- **Ingestion scale:** Processes raw data arrays from 1,422 initial samples across ~540,000 polymorphic markers (~800 million data points).
+- Automated data-wrangling scripts use string processing (`AWK`/`Bash`) to reformat and structure the genomic data for fast downstream parsing.
 
-### 2. Multi-Stage Quality Control Gating & Pruning
-To guarantee model stability and prevent statistical distortion, the pipeline enforces strict data-integrity filters:
-- **Sample Gating:** Eliminates low-confidence samples, retaining a high-quality cohort of 1,204 individuals ($84.7\%$ retention rate).
-- **Call-Rate Validation:** Mandates a stringent genotype completion threshold of $>99\%$.
-- **Network Pruning & Covariate Adjustments:** Implements genomic relatedness matrix calculations (pruning second-degree or closer relatives) and executes Principal Component Analysis (PCA) for dimensionality reduction to control for hidden population stratification.
+### 2. Multi-Stage Quality Control & Pruning
+To keep the model stable and avoid statistical distortion, the pipeline applies strict data-integrity filters:
+- **Sample filtering:** Removes low-confidence samples, retaining 1,204 individuals ($84.7\%$ retention rate).
+- **Call-rate filtering:** Requires a genotype completion rate above $99\%$.
+- **Relatedness pruning & covariate adjustment:** Computes a genomic relatedness matrix to prune second-degree or closer relatives, and runs Principal Component Analysis (PCA) for dimensionality reduction to control for hidden population stratification.
 
-### 3. Imputation Scaling Engine
-- Scales the high-quality filtered markers up to **~3.2 million variants** using reference panel imputation, generating a dense feature matrix containing **3.85 billion discrete genotype calls**.
-- Tracks and monitors imputation quality scores, enforcing an information threshold metric ($INFO / R^2 > 0.95$) to guarantee synthetic feature reliability.
+### 3. Imputation
+- Scales the filtered markers up to **~3.2 million variants** using reference-panel imputation, producing a dense feature matrix of **3.85 billion genotype calls**.
+- Tracks imputation quality scores and keeps only variants above an information threshold ($INFO / R^2 > 0.95$) to ensure the imputed features are reliable.
 
-### 4. Parallelized Polygenic Scoring (PGS) & Resampling Engine
-- **Distributed Computing Architecture:** Deploys tasks via `PySpark` and Python `multiprocessing` arrays optimized for a multi-core Slurm High-Performance Computing (HPC) cluster.
-- **Compute Optimization:** Executes linear combinations of variant effect weights using classical (Linkage Disequilibrium clumping/thresholding) and state-of-the-art Bayesian/linkage models (such as LDAK frameworks).
-- **Generalization Guarantees:** Implements a rigorous 100-fold train-test resampling split to bound generalization error and entirely mitigate over-fitting risks.
+### 4. Parallelized Polygenic Scoring (PGS) & Resampling
+- **Distributed computing:** Runs tasks through `PySpark` and Python `multiprocessing` on a multi-core Slurm HPC cluster.
+- **Scoring methods:** Computes linear combinations of variant effect weights using both classical methods (linkage-disequilibrium clumping and thresholding) and Bayesian/linkage models (such as LDAK).
+- **Generalization:** Uses a 100-fold train-test resampling split to estimate generalization error and reduce over-fitting.
 
 ---
 
-## 📊 Pipeline KPIs & Framework Benchmarks
+## 📊 Pipeline Metrics & Benchmarks
 
-The automated pipeline maintained exceptional performance criteria and verifiable predictive signals across continuous longitudinal phenotypes:
+The pipeline met the following thresholds and produced measurable predictive signal across continuous longitudinal phenotypes:
 
-| Pipeline Metric | Production Threshold |
+| Pipeline Metric | Threshold |
 | :--- | :--- |
 | **Genotype Call Rate** | $\ge 99.0\%$ |
 | **Imputation Quality ($R^2$)** | $> 0.95$ |
@@ -52,6 +52,6 @@ The automated pipeline maintained exceptional performance criteria and verifiabl
 
 ## 🛠️ Technical Stack & Infrastructure
 
-- **Data Engineering & Distributed Computing:** PySpark, Python Multiprocessing, Bash, AWK
-- **Infrastructure & Devops:** Singularity Containers, Slurm Workload Manager, High-Performance Computing Cluster Environments
-- **Statistical Analytics & Core Protocols:** High-Dimensional Linear Predictors, Principal Component Analysis (PCA), Covariate Matrix Adjustments, LDAK & Classical PGS Algorithms
+- **Data engineering & distributed computing:** PySpark, Python multiprocessing, Bash, AWK
+- **Infrastructure & DevOps:** Singularity containers, Slurm workload manager, HPC clusters
+- **Statistics & methods:** High-dimensional linear predictors, Principal Component Analysis (PCA), covariate adjustment, LDAK and classical PGS algorithms
